@@ -4,4 +4,5 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Reading the csv file into a pandas DataFrame
-data = pd.read_csv('newsData.csv', encoding = "ISO-8859-1")
+newsData = pd.read_csv('newsData.csv', encoding = "ISO-8859-1")
+
