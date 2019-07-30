@@ -1,10 +1,8 @@
 # Importing pandas and numpy and others
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from nltk.tokenize import TreebankWordTokenizer
 from nltk.stem import WordNetLemmatizer
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 import re
 
@@ -14,7 +12,6 @@ newsData = pd.read_csv('news_rates.csv', encoding = "ISO-8859-1")
 #initializing tokenizer, lemmatizer, vectorizers
 tokenizer = TreebankWordTokenizer()
 stemmer = WordNetLemmatizer()
-tfidf = TfidfVectorizer(min_df=2, max_df=0.5, ngram_range=(1, 2))
 cvec = CountVectorizer()
 
 #data clening and making tokens form text
@@ -41,14 +38,15 @@ def print_token_frequency(data_set):
 	term_freq_df = pd.DataFrame([pos],columns=cvec.get_feature_names()).transpose()
 	print(term_freq_df.sort_values(by=[0], ascending=False)[:10])
 
-print_token_frequency(test_result)
+#print_token_frequency(test_result)
 
-#tfidf features form clean text
-features = tfidf.fit_transform(test_result)
+texts = newsData.text
+clean_texts = []
+for row in texts:
+	clean_texts.append(data_cleaner(row))
 
-featuresDf = pd.DataFrame(
-    features.todense(),
-    columns=tfidf.get_feature_names()
-)
+clean_df = pd.DataFrame(clean_texts,columns=['text'])
+clean_df['target'] = newsData.Rate
+print(clean_df.head())
 
-print(featuresDf.head())
+clean_df.to_csv('clean_news.csv',encoding='utf-8')
