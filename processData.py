@@ -6,6 +6,8 @@ from sklearn.feature_extraction import text
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import TruncatedSVD
 
 csv = 'clean_news.csv'
 news_df = pd.read_csv(csv,index_col=0)
@@ -40,14 +42,25 @@ def tfidf_features(x_train, x_test):
 	print(featuresDf.head())
 	'''
 x_train_features, x_test_features = tfidf_features(x_train, x_test)
+
+#normalizing features
+sc = StandardScaler(with_mean=False)
+X_train = sc.fit_transform(x_train_features)
+X_test = sc.transform(x_test_features)
+
+#dimensionality reduction
+svd = TruncatedSVD(2)
+X_train = svd.fit_transform(X_train)
+X_test = svd.transform(X_test)
+
 # Create linear regression object
 regr = LinearRegression()
 
 # Train the model using the training sets
-regr.fit(x_train_features, y_train)
+regr.fit(X_train, y_train)
 
 # Make predictions using the testing set
-y_pred = regr.predict(x_test_features)
+y_pred = regr.predict(X_test)
 
 print("Mean squared error: %.2f"
       % mean_squared_error(y_test, y_pred))
